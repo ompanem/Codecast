@@ -4,6 +4,7 @@ import subprocess
 import edge_tts
 import asyncio
 import json
+import shutil
 os.makedirs("frames", exist_ok=True)
 
 #There are multiple paths so it's compatible with MAC, Linux, and Windows
@@ -134,51 +135,74 @@ def draw_frame(code_displayed, output_text):
 
 
 with open("video.json") as f:
-    data = json.load(f)
-    code = data["code"]
-    narration = data["narration"]
-    output = data["output"]
+    scenes = json.load(f)
 
-asyncio.run(make_voice(narration, "voice.mp3"))
-FPS = 5
-audio_length = get_audio_length("voice.mp3")
-total_frames = int(audio_length*FPS)
-#So typing doesn't immediately start slight delay
-start_hold_frames = total_frames//6
-#Same with the end so the video doesn't end abruptly
-end_hold_frames = total_frames//3 - start_hold_frames
-typing_frames = total_frames-end_hold_frames-start_hold_frames
+for scene_number, scene in enumerate(scenes):
+    code = scene["code"]
+    narration = scene["narration"]
+    output = scene["output"]
+    asyncio.run(make_voice(narration, f"voice_{scene_number}.mp3"))
+    FPS = 5
+    audio_length = get_audio_length(f"voice_{scene_number}.mp3")
+    total_frames = int(audio_length*FPS)
+    #So typing doesn't immediately start slight delay
+    start_hold_frames = total_frames//6
+    #Same with the end so the video doesn't end abruptly
+    end_hold_frames = total_frames//3 - start_hold_frames
+    typing_frames = total_frames-end_hold_frames-start_hold_frames
 
 
-frame_number = 0
-#draw the empty editor for a few frames so there's a short pause before typing starts
-for s in range(start_hold_frames):
-    frame = draw_frame("", "")
-    frame.save(f"frames/frame_{frame_number:04d}.png")
-    frame_number+=1
+    frame_number = 0
+    scene_folder = f"frames_{scene_number}"
+    os.makedirs(scene_folder, exist_ok=True)
+    #draw the empty editor for a few frames so there's a short pause before typing starts
+    for s in range(start_hold_frames):
+        frame = draw_frame("", "")
+        frame.save(f"{scene_folder}/frame_{frame_number:04d}.png")
+        frame_number+=1
 
-for n in range(typing_frames):
-    #the n+1 is so there isn't an extra blank frame in the typing animation since we already have a start buffer
-    typing_progress = (n+1)/typing_frames #how far we are through typing as a percent (0 to 1)
-    chars_to_show = int(typing_progress* len(code))  #multiply the progress by the length to get the number of characters to type
-    frame = draw_frame(code[:chars_to_show], "")  #draw only that many characters 
-    frame.save(f"frames/frame_{frame_number:04d}.png")
-    frame_number+=1
+    for n in range(typing_frames):
+        #the n+1 is so there isn't an extra blank frame in the typing animation since we already have a start buffer
+        typing_progress = (n+1)/typing_frames #how far we are through typing as a percent (0 to 1)
+        chars_to_show = int(typing_progress* len(code))  #multiply the progress by the length to get the number of characters to type
+        frame = draw_frame(code[:chars_to_show], "")  #draw only that many characters 
+        frame.save(f"{scene_folder}/frame_{frame_number:04d}.png")
+        frame_number+=1
 
-#same as start_hold_frames loop, so there's a buffer before the video ends
-for h in range(end_hold_frames):
-    frame = draw_frame(code, output)
-    frame.save(f"frames/frame_{frame_number:04d}.png")
-    frame_number+=1
+    #same as start_hold_frames loop, so there's a buffer before the video ends
+    for h in range(end_hold_frames):
+        frame = draw_frame(code, output)
+        frame.save(f"{scene_folder}/frame_{frame_number:04d}.png")
+        frame_number+=1
 
+    subprocess.run([
+        "ffmpeg", #program running 
+        "-y",     #yes to file override
+        "-framerate", str(FPS), #play the video at 5 fps
+        "-i", f"{scene_folder}/frame_%04d.png",
+        "-i", f"voice_{scene_number}.mp3",
+        "-c:a", "aac",
+        "-pix_fmt", "yuv420p",
+        "-shortest",
+        f"scene_{scene_number}.mp4"
+    ])
+
+with open("scenes.txt", "w") as f:
+    for i in range(len(scenes)):
+        f.write(f"file 'scene_{i}.mp4'\n")
 subprocess.run([
-    "ffmpeg", #program running 
-    "-y",     #yes to file override
-    "-framerate", str(FPS), #play the video at 5 fps
-    "-i", "frames/frame_%04d.png",
-    "-i", "voice.mp3",
-    "-c:a", "aac",
-    "-pix_fmt", "yuv420p",
-    "-shortest",
+    "ffmpeg",
+    "-y",
+    "-f", "concat",
+    "-safe", "0",
+    "-i", "scenes.txt",
+    "-c", "copy",
     "output.mp4"
 ])
+
+for i in range(len(scenes)):
+    os.remove(f"voice_{i}.mp3")
+    os.remove(f"scene_{i}.mp4")
+    shutil.rmtree(f"frames_{i}")
+shutil.rmtree("frames")
+os.remove("scenes.txt")
