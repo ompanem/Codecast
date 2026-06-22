@@ -1,4 +1,5 @@
 {
     "code": "for i in range(3):\n    print(i)",
-    "narration": "this is a for loop that counts to 3"
+    "narration": "this is a for loop that counts to 3",
+    "output": "0 1 2"
 }

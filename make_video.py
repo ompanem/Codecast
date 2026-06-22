@@ -63,7 +63,7 @@ MONO_FONT_PATHS = [
 code_font = load_fonts(MONO_FONT_PATHS, int(HEIGHT*.03))
 CODE_TEXT_COLOR = (235,238,245)
 
-def draw_frame(code_displayed):
+def draw_frame(code_displayed, output_text):
     img = Image.new("RGB", VIDEO_DIMENSIONS, BACKGROUND_COLOR)
     #Just the spacing, tinkered around with the values until it looked goodd
     panel_margin_x = int(WIDTH*.04)
@@ -125,6 +125,11 @@ def draw_frame(code_displayed):
     for line in code_lines:
         drawing_tool.text((text_x, text_y), line, font=code_font, fill=CODE_TEXT_COLOR)
         text_y+=line_height
+    output_x = output_left + text_padding_x
+    output_y = output_top + int(HEIGHT*.05)
+    for line in output_text.split("\n"):
+        drawing_tool.text((output_x, output_y), line, font=code_font, fill=CODE_TEXT_COLOR)
+        output_y+=line_height
     return img
 
 
@@ -132,6 +137,7 @@ with open("video.json") as f:
     data = json.load(f)
     code = data["code"]
     narration = data["narration"]
+    output = data["output"]
 
 asyncio.run(make_voice(narration, "voice.mp3"))
 FPS = 5
@@ -147,7 +153,7 @@ typing_frames = total_frames-end_hold_frames-start_hold_frames
 frame_number = 0
 #draw the empty editor for a few frames so there's a short pause before typing starts
 for s in range(start_hold_frames):
-    frame = draw_frame("")
+    frame = draw_frame("", "")
     frame.save(f"frames/frame_{frame_number:04d}.png")
     frame_number+=1
 
@@ -155,13 +161,13 @@ for n in range(typing_frames):
     #the n+1 is so there isn't an extra blank frame in the typing animation since we already have a start buffer
     typing_progress = (n+1)/typing_frames #how far we are through typing as a percent (0 to 1)
     chars_to_show = int(typing_progress* len(code))  #multiply the progress by the length to get the number of characters to type
-    frame = draw_frame(code[:chars_to_show])  #draw only that many characters 
+    frame = draw_frame(code[:chars_to_show], "")  #draw only that many characters 
     frame.save(f"frames/frame_{frame_number:04d}.png")
     frame_number+=1
 
 #same as start_hold_frames loop, so there's a buffer before the video ends
 for h in range(end_hold_frames):
-    frame = draw_frame(code)
+    frame = draw_frame(code, output)
     frame.save(f"frames/frame_{frame_number:04d}.png")
     frame_number+=1
 
