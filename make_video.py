@@ -133,11 +133,7 @@ def draw_frame(code_displayed, output_text):
         output_y+=line_height
     return img
 
-
-with open("video.json") as f:
-    scenes = json.load(f)
-
-for scene_number, scene in enumerate(scenes):
+def make_scene(scene, scene_number):
     code = scene["code"]
     narration = scene["narration"]
     output = scene["output"]
@@ -186,10 +182,17 @@ for scene_number, scene in enumerate(scenes):
         "-shortest",
         f"scene_{scene_number}.mp4"
     ])
+    
+with open("video.json") as f:
+    scenes = json.load(f)
+
+for scene_number, scene in enumerate(scenes):
+    make_scene(scene, scene_number)
 
 with open("scenes.txt", "w") as f:
     for i in range(len(scenes)):
         f.write(f"file 'scene_{i}.mp4'\n")
+
 subprocess.run([
     "ffmpeg",
     "-y",
