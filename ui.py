@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 
+scenes = []
 window = tk.Tk()
 window.title("Codecast")
 scene_label = tk.Label(window, text="Scene 1")
@@ -28,13 +29,26 @@ def export_video():
     narration = narration_box.get("1.0", "end-1c")
     output = output_box.get("1.0", "end-1c")
     scene = {"code": code, "narration": narration, "output": output}
-    scenes = [scene]
+    scenes.append(scene)
 
     with open("video.json", "w") as f:
         json.dump(scenes, f)
     subprocess.run([sys.executable, "make_video.py"])
 
+def next_scene():
     
+    code = code_box.get("1.0", "end-1c")
+    narration = narration_box.get("1.0", "end-1c")
+    output = output_box.get("1.0", "end-1c")
+    scene = {"code": code, "narration": narration, "output": output}
+    scenes.append(scene)
+    
+    code_box.delete("1.0", "end")
+    narration_box.delete("1.0", "end")
+    output_box.delete("1.0", "end")
+    scene_label.config(text=f"Scene {len(scenes)+1}")
+next_button = tk.Button(window, text="Next Scene", command=next_scene)
+next_button.grid(row=3, column=1)
 export_button = tk.Button(window, text="Export Video", command=export_video)
 export_button.grid(row=4, column=1)
 
