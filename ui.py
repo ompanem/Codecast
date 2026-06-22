@@ -7,23 +7,23 @@ scenes = []
 current_scene = 0
 window = tk.Tk()
 window.title("Codecast")
-scene_label = tk.Label(window, text="Scene 1")
-scene_label.grid(row=0, column=0, columnspan=2)
+scene_label = tk.Label(window, text="Scene 1", font=("Arial", 20, "bold"))
+scene_label.grid(row=0, column=0, columnspan=2, pady=10)
 
-code_label = tk.Label(window, text="Code")
-code_label.grid(row=1, column=0)
+code_label = tk.Label(window, text="Code", font=("Arial", 14))
+code_label.grid(row=1, column=0, padx=10, pady=5)
 code_box = tk.Text(window, height=10, width=40)
-code_box.grid(row=2, column=0)
+code_box.grid(row=2, column=0, padx=10, pady=5)
 
-output_label = tk.Label(window, text="Output:")
-output_label.grid(row=3, column=0)
+output_label = tk.Label(window, text="Output:", font=("Arial", 14))
+output_label.grid(row=3, column=0, padx=10, pady=5)
 output_box = tk.Text(window, height=5, width=40)
-output_box.grid(row=4, column=0)
+output_box.grid(row=4, column=0, padx=10, pady=5)
 
-narration_label = tk.Label(window, text="Narration")
-narration_label.grid(row=1, column=1)
+narration_label = tk.Label(window, text="Narration", font=("Narration", 14))
+narration_label.grid(row=1, column=1, padx=10, pady=5)
 narration_box = tk.Text(window, height=10, width=40)
-narration_box.grid(row=2, column=1)
+narration_box.grid(row=2, column=1, padx=10, pady=5)
 
 def export_video():
     save_path = filedialog.asksaveasfilename(
@@ -91,12 +91,12 @@ def next_scene():
         output_box.delete("1.0", "end")
         scene_label.config(text=f"Scene {current_scene+1}")
 
-back_button = tk.Button(window, text="Back", command=back_scene)
-back_button.grid(row=5, column=1)
-next_button = tk.Button(window, text="Next Scene", command=next_scene)
-next_button.grid(row=3, column=1)
-export_button = tk.Button(window, text="Export Video", command=export_video)
-export_button.grid(row=4, column=1)
+back_button = tk.Button(window, text="Previous Scene", command=back_scene, font=("Arial", 12))
+back_button.grid(row=5, column=1, padx=10, pady=5)
+next_button = tk.Button(window, text="Next Scene", command=next_scene, font=("Arial", 12))
+next_button.grid(row=3, column=1, padx=10, pady=5)
+export_button = tk.Button(window, text="Export Video", command=export_video, font=("Arial", 12))
+export_button.grid(row=4, column=1, padx=10, pady=5)
 
 window.mainloop()
 
