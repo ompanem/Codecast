@@ -2,12 +2,13 @@
 
 This project turns code and text into a synced narrated video
 
+**▶️[Watch the demo](https://www.youtube.com/watch?v=3hekBi8Fxcs)**
 ## Features
 
-- Types out your code with an animation
-- Generates narration automatically with text to speech
-- Syncs the typing to the length of the narration   
-- Pulls content from a JSON file so you can swap in new code and a script easily
+- Has a user interface where you type out each scene into boxes instead of editing files by hand
+- Supports multiple scenes that get merged into one video
+- Lets you go back and edit earlier scenes before exporting the video
+- Lets you choose where to save the finished video
 
 ## Why did I build this project?
 
@@ -32,6 +33,8 @@ pip install -r requirements.txt
 ```
 3. **Run it**
 ```
-python make_video.py
+python ui.py
 ```
-This reads `video.json`, generates the narration, creates the frames, and outputs it into output.mp4
+4. **Make your video**
+
+In the window that opens up, type your code, narration, and expected output for each scene.  Click **Next Scene** to add more scenes, **Previous Scene** to go back and edit scenes, then **Export Video** to choose where to save your finished video.

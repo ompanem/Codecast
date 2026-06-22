@@ -6,6 +6,7 @@ from tkinter import filedialog
 scenes = []
 current_scene = 0
 window = tk.Tk()
+window.resizable(False, False)
 window.title("Codecast")
 scene_label = tk.Label(window, text="Scene 1", font=("Arial", 20, "bold"))
 scene_label.grid(row=0, column=0, columnspan=2, pady=10)
@@ -37,7 +38,10 @@ def export_video():
     narration = narration_box.get("1.0", "end-1c")
     output = output_box.get("1.0", "end-1c")
     scene = {"code": code, "narration": narration, "output": output}
-    scenes.append(scene)
+    if current_scene < len(scenes):
+        scenes[current_scene] = scene
+    else:
+        scenes.append(scene)
 
     with open("video.json", "w") as f:
         json.dump(scenes, f)
