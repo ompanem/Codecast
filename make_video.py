@@ -5,8 +5,10 @@ import edge_tts
 import asyncio
 import json
 import shutil
+import sys
 os.makedirs("frames", exist_ok=True)
 
+output_path = sys.argv[1]
 #There are multiple paths so it's compatible with MAC, Linux, and Windows
 def load_fonts(possible_paths, size):
     for path in possible_paths:
@@ -200,7 +202,7 @@ subprocess.run([
     "-safe", "0",
     "-i", "scenes.txt",
     "-c", "copy",
-    "output.mp4"
+    output_path
 ])
 
 for i in range(len(scenes)):
