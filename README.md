@@ -3,6 +3,7 @@
 This project turns code and text into a synced narrated video
 
 **▶️[Watch the demo](https://www.youtube.com/watch?v=3hekBi8Fxcs)**
+![Codecast screenshot](Github_screenshot.png)
 ## Features
 
 - Has a user interface where you type out each scene into boxes instead of editing files by hand
