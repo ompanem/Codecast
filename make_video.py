@@ -7,7 +7,15 @@ import json
 import shutil
 import sys
 
+def resource_path(filename):
+    if hasattr(sys, "_MEIPASS"):
+        base = sys._MEIPASS
+    else:
+        base = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base, "bin", filename)
 
+FFMPEG = resource_path("ffmpeg.exe")
+FFPROBE = resource_path("ffprobe.exe")
 #There are multiple paths so it's compatible with MAC, Linux, and Windows
 def load_fonts(possible_paths, size):
     for path in possible_paths:
@@ -21,7 +29,7 @@ def load_fonts(possible_paths, size):
 def get_audio_length(filename):
     result = subprocess.run(
         [
-            "ffprobe", "-v", "error",
+            FFPROBE, "-v", "error",
             "-show_entries", "format=duration", #show only the duration entries
             "-of", "default=noprint_wrappers=1:nokey=1", #print just the number, nothing else
             filename
@@ -173,7 +181,7 @@ def make_scene(scene, scene_number):
         frame_number+=1
 
     subprocess.run([
-        "ffmpeg", #program running 
+        FFMPEG, #program running 
         "-y",     #yes to file override
         "-framerate", str(FPS), #play the video at 5 fps
         "-i", f"{scene_folder}/frame_%04d.png",
@@ -193,7 +201,7 @@ def make_full_video(scenes, output_path):
             f.write(f"file 'scene_{i}.mp4'\n")
 
     subprocess.run([
-        "ffmpeg",
+        FFMPEG,
         "-y",
         "-f", "concat",
         "-safe", "0",

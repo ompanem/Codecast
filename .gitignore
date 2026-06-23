@@ -4,6 +4,7 @@ voice.mp3
 test.png
 voice_test.py
 build/
+bin/
 dist/
 *.spec
 __pycache__/
