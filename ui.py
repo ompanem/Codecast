@@ -3,13 +3,16 @@ import json
 import subprocess
 import sys
 from tkinter import filedialog
-scenes = []
-current_scene = 0
+from make_video import make_full_video
+
+
+scenes = [] #All the scenes in the video
+current_scene = 0 #The scene the user is currently editing  
 window = tk.Tk()
 window.resizable(False, False)
 window.title("Codecast")
-scene_label = tk.Label(window, text="Scene 1", font=("Arial", 20, "bold"))
-scene_label.grid(row=0, column=0, columnspan=2, pady=10)
+scene_label = tk.Label(window, text="Scene 1", font=("Arial", 20, "bold")) #Big title to show the current scene number
+scene_label.grid(row=0, column=0, columnspan=2, pady=10) #place it at the top and make it 2 columns wide
 
 code_label = tk.Label(window, text="Code", font=("Arial", 14))
 code_label.grid(row=1, column=0, padx=10, pady=5)
@@ -21,7 +24,7 @@ output_label.grid(row=3, column=0, padx=10, pady=5)
 output_box = tk.Text(window, height=5, width=40)
 output_box.grid(row=4, column=0, padx=10, pady=5)
 
-narration_label = tk.Label(window, text="Narration", font=("Narration", 14))
+narration_label = tk.Label(window, text="Narration", font=("Arial", 14))
 narration_label.grid(row=1, column=1, padx=10, pady=5)
 narration_box = tk.Text(window, height=10, width=40)
 narration_box.grid(row=2, column=1, padx=10, pady=5)
@@ -45,7 +48,7 @@ def export_video():
 
     with open("video.json", "w") as f:
         json.dump(scenes, f)
-    subprocess.run([sys.executable, "make_video.py", save_path])
+    make_full_video(scenes, save_path)
 
 def load_scene(index):
     code_box.delete("1.0", "end")

@@ -6,9 +6,8 @@ import asyncio
 import json
 import shutil
 import sys
-os.makedirs("frames", exist_ok=True)
 
-output_path = sys.argv[1]
+
 #There are multiple paths so it's compatible with MAC, Linux, and Windows
 def load_fonts(possible_paths, size):
     for path in possible_paths:
@@ -185,29 +184,26 @@ def make_scene(scene, scene_number):
         f"scene_{scene_number}.mp4"
     ])
     
-with open("video.json") as f:
-    scenes = json.load(f)
+def make_full_video(scenes, output_path):
+    for scene_number, scene in enumerate(scenes):
+        make_scene(scene, scene_number)
 
-for scene_number, scene in enumerate(scenes):
-    make_scene(scene, scene_number)
+    with open("scenes.txt", "w") as f:
+        for i in range(len(scenes)):
+            f.write(f"file 'scene_{i}.mp4'\n")
 
-with open("scenes.txt", "w") as f:
+    subprocess.run([
+        "ffmpeg",
+        "-y",
+        "-f", "concat",
+        "-safe", "0",
+        "-i", "scenes.txt",
+        "-c", "copy",
+        output_path
+    ])
+
     for i in range(len(scenes)):
-        f.write(f"file 'scene_{i}.mp4'\n")
-
-subprocess.run([
-    "ffmpeg",
-    "-y",
-    "-f", "concat",
-    "-safe", "0",
-    "-i", "scenes.txt",
-    "-c", "copy",
-    output_path
-])
-
-for i in range(len(scenes)):
-    os.remove(f"voice_{i}.mp3")
-    os.remove(f"scene_{i}.mp4")
-    shutil.rmtree(f"frames_{i}")
-shutil.rmtree("frames")
-os.remove("scenes.txt")
+        os.remove(f"voice_{i}.mp3")
+        os.remove(f"scene_{i}.mp4")
+        shutil.rmtree(f"frames_{i}")
+    os.remove("scenes.txt")
