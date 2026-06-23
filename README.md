@@ -7,7 +7,7 @@ This project turns code and text into a synced narrated video
 
 ## Download
 
-Download the latest version **[Codecast.exe](https://github.com/ompanem/Codecast/releases/latest)** and run it, no Python needed. (Requires Ffmpeg installed, see requirements below)
+Download the latest version of **[Codecast.exe](https://github.com/ompanem/Codecast/releases/latest)** and run it, no Python needed. (Requires Ffmpeg installed, see requirements below)
 
 ## How it works
 Each scene is rendered as it's own video where the frames are synced to match the length of the narration.  Then all of these videos are merged together into one final video using ffmpeg.  
